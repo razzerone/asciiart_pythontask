@@ -5,13 +5,13 @@ from unittest import TestCase
 from PIL import Image
 
 import settings
-from asciiart import ASCIIArt, Output, asciiart
+from asciiart import ArtProcessor, Output, asciiart
 
 
 class ASCIIArtTest(TestCase):
     def setUp(self):
-        self.img = Image.open('a.jpg')
-        self.art = list(ASCIIArt.make_asciiart(self.img))
+        self.img = Image.open('assets/a.jpg')
+        self.art = list(ArtProcessor.make_asciiart(self.img))
 
     def test_make_asciiart_correct(self):
         self.assertEquals(
@@ -20,7 +20,7 @@ class ASCIIArtTest(TestCase):
         )
 
     def test_process_art_to_image_correct(self):
-        img_art = ASCIIArt.process_art_to_image(
+        img_art = ArtProcessor.process_art_to_image(
             ''.join(self.art), self.img.width, self.img.height
         )
         self.assertNotEquals(self.img.width, img_art.width)
@@ -48,7 +48,7 @@ class OutputTxtTest(TestCase):
 
 class OutputImgTest(TestCase):
     def setUp(self) -> None:
-        self.img = Image.open('a.jpg')
+        self.img = Image.open('assets/a.jpg')
         self.path_img = Path('abc.png')
 
     def tearDown(self) -> None:
@@ -68,7 +68,7 @@ class OutputImgTest(TestCase):
 
 class CommonTest(TestCase):
     def setUp(self) -> None:
-        self.path = Path('a.jpg')
+        self.path = Path('assets/a.jpg')
         self.dest_txt_path = Path.cwd() / f'asciiart_{self.path.stem}.txt'
         self.dest_png_path = Path.cwd() / f'asciiart_{self.path.stem}.png'
 
