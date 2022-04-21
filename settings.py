@@ -7,6 +7,7 @@
 
 В переменной contrast_step лежит число, равное шагу между уровнями яркости
 """
+import cv2
 
 contrast_step = 26
 
@@ -24,11 +25,8 @@ ASCII_symbols = {
             9: '@@',
         }
 
-# тут стоит такой нестандартный шрифт, т.к у меня на компе они хранятся
-# в странном формате и поэтому в папке проекта необходим файл со шрифтом
+image_font = cv2.FONT_HERSHEY_TRIPLEX
+image_font_size = 0.5
 
-# При возникновении проблем на Windows попробуйте поменять шрифт на
-# "Courier.ttf"
-
-image_font = 'Monospace.ttf'
-image_font_size = 8
+image_font_width = 12
+image_font_height = 17

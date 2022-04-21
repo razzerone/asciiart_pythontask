@@ -3,6 +3,9 @@ import sys
 from collections.abc import Iterable
 from pathlib import Path
 
+import cv2
+import numpy
+
 import settings
 
 from PIL import Image, ImageFont, ImageDraw
@@ -13,39 +16,51 @@ class ASCIIArt:
     Функция получает на вход изображение и возвращает готовый ascii арт в виде
     итератора с разделениями на строки
     """
-    @staticmethod
-    def make_asciiart(img: Image.Image) -> Iterable[str]:
-        return ASCIIArt._convert_to_ascii(img.convert('L'))
-
-    """
-    Функция принимает строку и размеры ascii арта и возвращает изображение, на
-    котором арт напечатан 
-    
-    Для работы этой функции необходим файл с моноширинным шрифтом
-    """
-    @staticmethod
-    def process_art_to_image(art: str, width: int, height: int) -> Image.Image:
-
-        # получить размер шрифта в пикселях мы так и не смогли
-        image = Image.new('RGB', (width * 9, height * 11))
-        image_font = ImageFont.truetype(
-            settings.image_font,
-            settings.image_font_size
-        )
-        im_draw = ImageDraw.Draw(image)
-        im_draw.text((0, 0), art, font=image_font)
-
-        return image
 
     @staticmethod
-    def _convert_to_ascii(img: Image.Image) -> Iterable[str]:
+    def process_image_to_asciiart(img: Image.Image) -> Iterable[str]:
         count = 0
         for p in img.getdata():
-            yield settings.ASCII_symbols[p // settings.contrast_step]
+            yield settings.ASCII_symbols[
+                (p[0] + p[1] + p[2]) / 3 // settings.contrast_step]
             count += 1
             if count == img.width:
                 yield '\n'
                 count = 0
+
+    @staticmethod
+    def process_pixel_to_char(pixel):
+        return (pixel[0] + pixel[1] + pixel[2]) / 3 // settings.contrast_step
+
+
+class ImagePrinter:
+    def __init__(self, width, height):
+        self.img = numpy.asarray(Image.new('RGB', (width * 12, height * 17)))
+        self.x = 0
+        self.y = 0
+
+    def print_char(self, char):
+        if char == '\n':
+            self.y += 1
+            self.x = 0
+        else:
+            # печатает по одному пикселю (букве)
+            cv2.putText(
+                self.img, char,
+                (
+                    self.x * settings.image_font_width,
+                    self.y * settings.image_font_height
+                ),
+                settings.image_font,
+                settings.image_font_size,
+                (150, 150, 150),
+                thickness=1, lineType=cv2.LINE_4
+            )
+
+            self.x += 1
+
+    def save_image(self, path):
+        Image.fromarray(self.img).save(path)
 
 
 class Output:
@@ -55,6 +70,7 @@ class Output:
     Если файл с таким именем уже существует, будет выведено сообщение
     и приложение завершит работу
     """
+
     @staticmethod
     def print_art_in_text_file(path: Path, art: str) -> None:
         if path.exists():
@@ -71,6 +87,7 @@ class Output:
     Если файл с таким именем уже существует, будет выведено сообщение
     и приложение завершит работу
     """
+
     @staticmethod
     def print_art_in_image_file(path: Path, art: Image.Image) -> None:
         if path.exists():
@@ -87,17 +104,17 @@ def asciiart(path: Path) -> None:
         print(f'Не удалось найти изображение по заданному пути {path}')
         sys.exit(1)
 
-    art = ''.join(ASCIIArt.make_asciiart(img))
+    art = ASCIIArt.process_image_to_asciiart(img)
 
-    Output.print_art_in_text_file(
-        Path.cwd() / f'asciiart_{path.stem}.txt',
-        art
-    )
+    ip = ImagePrinter(img.width, img.height)
 
-    Output.print_art_in_image_file(
-        Path.cwd() / f'asciiart_{path.stem}.png',
-        ASCIIArt.process_art_to_image(art, img.width, img.height)
-    )
+    with open(Path.cwd() / f'asciiart_{path.stem}.txt') as f:
+        for c in art:
+            # в цикле печатает на изображение и в файл
+            ip.print_char(c)
+            f.write(c)
+
+    ip.save_image(Path.cwd() / f'asciiart_{path.stem}.png')
 
 
 def main():
