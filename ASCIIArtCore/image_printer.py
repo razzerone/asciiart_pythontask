@@ -17,8 +17,7 @@ class ImagePrinter:
                 (
                     width * settings.image_font_width,
                     height * settings.image_font_height
-                ),
-                settings.background_color
+                )
             )
         )
         self.x = 0
@@ -37,7 +36,7 @@ class ImagePrinter:
                 ),
                 settings.image_font,
                 settings.image_font_size,
-                settings.symbols_color,
+                (120, 120, 120),
                 thickness=settings.image_font_thickness,
                 lineType=settings.image_font_line_type
             )

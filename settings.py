@@ -43,6 +43,3 @@ image_font_thickness = 2
 
 image_font_width = 12
 image_font_height = 17
-
-symbols_color = (255, 255, 255)
-background_color = (80, 140, 63)
