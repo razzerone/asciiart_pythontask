@@ -43,6 +43,14 @@ class ImagePrinter:
 
             self.x += 1
 
+    def get_image(self) -> Image.Image:
+        if self.x == 0 and self.y == 0:
+            raise Exception(
+                'Арт для печати на изображение не может быть пустым'
+            )
+
+        return Image.fromarray(self.img)
+
     def save(self, path: Path) -> None:
         """ 
             Функция сохраняет изображение с ascii артом в файл в формате png
@@ -55,4 +63,4 @@ class ImagePrinter:
             print(f'Файл изображения с именем {path.name} уже существует')
             sys.exit(1)
 
-        Image.fromarray(self.img).save(path)
+        self.get_image().save(path)

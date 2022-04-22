@@ -16,6 +16,9 @@ class TextPrinter:
             и приложение завершит работу
         """
 
+        if len(self.art) == 0:
+            raise Exception('Арт для печати в файл не может быть пустым')
+
         if path.exists():
             print(f'Текстовый файл с именем {path.name} уже существует')
             sys.exit(1)

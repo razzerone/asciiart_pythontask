@@ -5,13 +5,16 @@ from unittest import TestCase
 from PIL import Image
 
 import settings
-from asciiart import ArtProcessor, Output, asciiart
+from ASCIIArtCore.art_processor import ArtProcessor
+from ASCIIArtCore.image_printer import ImagePrinter
+from ASCIIArtCore.text_printer import TextPrinter
+from asciiart import asciiart
 
 
-class ASCIIArtTest(TestCase):
+class ArtProcessorTest(TestCase):
     def setUp(self):
         self.img = Image.open('assets/a.jpg')
-        self.art = list(ArtProcessor.make_asciiart(self.img))
+        self.art = list(ArtProcessor.process_image_to_asciiart(self.img))
 
     def test_make_asciiart_correct(self):
         self.assertEquals(
@@ -19,23 +22,30 @@ class ASCIIArtTest(TestCase):
             self.art[self.img.width]
         )
 
-    def test_process_art_to_image_correct(self):
-        img_art = ArtProcessor.process_art_to_image(
-            ''.join(self.art), self.img.width, self.img.height
+    def test_process_pixel_lowest_brightness(self):
+        self.assertEquals(
+            ArtProcessor.process_pixel_to_char((0, 0, 0)),
+            settings.ASCII_symbols[0]
         )
-        self.assertNotEquals(self.img.width, img_art.width)
-        self.assertNotEquals(self.img.height, img_art.height)
+
+    def test_process_pixel_highest_brightness(self):
+        self.assertEquals(
+            ArtProcessor.process_pixel_to_char((255, 255, 255)),
+            settings.ASCII_symbols[-1]
+        )
 
 
-class OutputTxtTest(TestCase):
+class TextPrinterTest(TestCase):
     def setUp(self):
         self.path_txt = Path('abc.txt')
+        self.tp = TextPrinter()
 
     def tearDown(self) -> None:
         os.remove(self.path_txt)
 
     def test_print_art_in_text_file_correct(self):
-        Output.print_art_in_text_file(self.path_txt, 'abc')
+        self.tp.add_char('q')
+        self.tp.save(self.path_txt)
         self.assertTrue(self.path_txt.exists())
 
     def test_print_art_in_text_file_with_existing_file(self):
@@ -43,27 +53,39 @@ class OutputTxtTest(TestCase):
             pass
 
         with self.assertRaises(SystemExit):
-            Output.print_art_in_text_file(self.path_txt, 'abc')
+            self.tp.add_char('q')
+            self.tp.save(self.path_txt)
+
+    def test_print_empty_art(self):
+        with self.assertRaises(Exception):
+            self.tp.save(self.path_txt)
 
 
-class OutputImgTest(TestCase):
+class ImagePrinterTest(TestCase):
     def setUp(self) -> None:
         self.img = Image.open('assets/a.jpg')
         self.path_img = Path('abc.png')
+        self.ip = ImagePrinter(1, 1)
 
     def tearDown(self) -> None:
         os.remove(self.path_img)
 
     def test_print_art_in_image_file_correct(self):
-        Output.print_art_in_image_file(self.path_img, self.img)
+        self.ip.add_char('q')
+        self.ip.save(self.path_img)
         self.assertTrue(self.path_img.exists())
 
     def test_print_art_in_image_file_with_existing_file(self):
-        with self.path_img.open('x') as f:
+        with self.path_img.open('x'):
             pass
 
         with self.assertRaises(SystemExit):
-            Output.print_art_in_image_file(self.path_img, self.img)
+            self.ip.add_char('q')
+            self.ip.save(self.path_img)
+
+    def test_print_empty_art(self):
+        with self.assertRaises(Exception):
+            self.ip.get_image()
 
 
 class CommonTest(TestCase):
