@@ -31,7 +31,7 @@ class ArtProcessorTest(TestCase):
     def test_process_pixel_highest_brightness(self):
         self.assertEquals(
             ArtProcessor.process_pixel_to_char((255, 255, 255)),
-            settings.ASCII_symbols[-1]
+            settings.ASCII_symbols[256 // settings.contrast_step]
         )
 
 
@@ -41,7 +41,8 @@ class TextPrinterTest(TestCase):
         self.tp = TextPrinter()
 
     def tearDown(self) -> None:
-        os.remove(self.path_txt)
+        if self.path_txt.exists():
+            os.remove(self.path_txt)
 
     def test_print_art_in_text_file_correct(self):
         self.tp.add_char('q')
@@ -68,7 +69,8 @@ class ImagePrinterTest(TestCase):
         self.ip = ImagePrinter(1, 1)
 
     def tearDown(self) -> None:
-        os.remove(self.path_img)
+        if self.path_img.exists():
+            os.remove(self.path_img)
 
     def test_print_art_in_image_file_correct(self):
         self.ip.add_char('q')

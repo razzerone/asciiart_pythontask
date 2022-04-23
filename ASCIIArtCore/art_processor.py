@@ -16,7 +16,7 @@ class ArtProcessor:
 
         count = 0
         for p in img.getdata():
-            yield settings.ASCII_symbols[ArtProcessor.process_pixel_to_char(p)]
+            yield ArtProcessor.process_pixel_to_char(p)
             count += 1
             if count == img.width:
                 yield '\n'
@@ -28,4 +28,6 @@ class ArtProcessor:
             Ставится однозначное соответствие пикселю в виде символа ASCII.
         """
 
-        return (pixel[0] + pixel[1] + pixel[2]) / 3 // settings.contrast_step
+        return settings.ASCII_symbols[
+            (pixel[0] + pixel[1] + pixel[2]) / 3 // settings.contrast_step
+            ]
