@@ -17,9 +17,9 @@ class ArtProcessorTest(TestCase):
         self.art = list(ArtProcessor.process_image_to_asciiart(self.img))
 
     def test_make_asciiart_correct(self):
-        self.assertEquals(
+        self.assertEqual(
             '\n',
-            self.art[self.img.width]
+            self.art[self.img.width][0]
         )
 
     def test_process_pixel_lowest_brightness(self):
