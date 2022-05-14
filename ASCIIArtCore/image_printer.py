@@ -6,6 +6,7 @@ import numpy
 from PIL import Image
 
 import settings
+from ASCIIArtCore.art_processor import Art
 
 
 class ImagePrinter:
@@ -23,6 +24,23 @@ class ImagePrinter:
 
         self.x = 0
         self.y = 0
+
+    def __init__(self, art: Art):
+        self.img = numpy.full(
+            (
+                art.height * settings.image_font_height,
+                art.width * settings.image_font_width,
+                3
+            ),
+            45,
+            dtype=numpy.uint8
+        )
+
+        self.x = 0
+        self.y = 0
+
+        for char, color in art.art:
+            self.add_char(char, color)
 
     def add_char(self, char: str,
                  color: tuple[int, int, int] = (255, 255, 255)) -> None:

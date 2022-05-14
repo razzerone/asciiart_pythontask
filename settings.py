@@ -39,7 +39,7 @@ ASCII_symbols = {
 image_font = cv2.FONT_HERSHEY_TRIPLEX
 image_font_size = 0.5
 image_font_line_type = cv2.FILLED
-image_font_thickness = 3
+image_font_thickness = 2
 
 image_font_width = 12
 image_font_height = 17

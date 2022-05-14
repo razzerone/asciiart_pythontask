@@ -1,10 +1,15 @@
 import sys
 from pathlib import Path
 
+from ASCIIArtCore.art_processor import Art
+
 
 class TextPrinter:
     def __init__(self):
         self.art = []
+
+    def __init__(self, art: Art):
+        self.art = list(map(lambda x: x[0], art.art))
 
     def add_char(self, char: str) -> None:
         self.art.append(char)
@@ -26,3 +31,6 @@ class TextPrinter:
         with path.open('w') as file:
             for c in self.art:
                 file.write(c)
+
+    def get_text(self):
+        return ''.join(self.art)

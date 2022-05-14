@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Iterable
 
 from PIL.Image import Image
@@ -5,7 +6,22 @@ from PIL.Image import Image
 import settings
 
 
+@dataclasses.dataclass
+class Art:
+    art: list[tuple[str, tuple]]
+    width: int
+    height: int
+
+
 class ArtProcessor:
+
+    @staticmethod
+    def get_ascii_art(img: Image) -> Art:
+        return Art(
+            list(ArtProcessor.process_image_to_asciiart(img)),
+            img.width,
+            img.height
+        )
 
     @staticmethod
     def process_image_to_asciiart(img: Image) -> Iterable[tuple[str, tuple]]:
