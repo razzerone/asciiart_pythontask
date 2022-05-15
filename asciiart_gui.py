@@ -21,8 +21,16 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
+
     win = MainWindow()
     win.show()
+    win.setStyleSheet(
+            "QWidget {background-color: rgba(0,41,59,255);} QScrollBar:horizontal {width: 1px; height: 1px;"
+            "background-color: rgba(0,41,59,255);} QScrollBar:vertical {width: 1px; height: 1px;"
+            "background-color: rgba(0,41,59,255);}"
+            "QPushButton { background-color: #b5e6e1 }"
+            "QPushButton:pressed { background-color: #51FFFF }"
+    )
     sys.exit(app.exec_())
 
 

@@ -1,5 +1,8 @@
 from PIL import Image
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton
+from PyQt5.QtCore import QTimer
+from PyQt5.uic.properties import QtCore
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QSplashScreen
+from PyQt5 import QtGui
 
 from ASCIIArtCore.art_processor import Art
 from ASCIIArtCore.image_printer import ImagePrinter
@@ -10,7 +13,7 @@ from ASCIIArtGUI.text_widget import TextWidget
 class ResultWidget(QWidget):
     def __init__(self, art: Art):
         super().__init__()
-
+        self.splash=None
         self.art = art
         self.text = None
         self.image = None
@@ -24,35 +27,42 @@ class ResultWidget(QWidget):
         layout.addWidget(show_text_btn)
 
         show_image_btn = QPushButton('Изображение')
-        show_image_btn.clicked.connect(self.show_text)
+        show_image_btn.clicked.connect(self.show_image)
         layout.addWidget(show_image_btn)
 
         save_text_btn = QPushButton('Сохранить текст')
-        save_text_btn.clicked.connect(self.show_text)
+        save_text_btn.clicked.connect(self.save_text)
         layout.addWidget(save_text_btn)
 
         save_image_btn = QPushButton('Сохранить изображение')
-        save_image_btn.clicked.connect(self.show_text)
+        save_image_btn.clicked.connect(self.save_image)
         layout.addWidget(save_image_btn)
+        self.splash = QSplashScreen(QtGui.QPixmap('fresco.png'))
 
     def _process_image(self):
         if self.image is None:
             self.image = ImagePrinter(self.art).get_image()
+            self.splash.show()
+            QTimer.singleShot(2000, self.splash.close)
 
     def _process_text(self):
         if self.text is None:
             self.text = TextPrinter(self.art).get_text()
+            self.splash.show()
+            QTimer.singleShot(2000, self.splash.close)
 
     def show_image(self):
         self._process_image()
         self.image.show()
 
     def show_text(self):
+
         self._process_text()
         self.label = TextWidget(self.text)
 
     def save_image(self):
-        pass
+        self.image.save("img.jpg")
 
     def save_text(self):
-        pass
+        with open('text.txt', 'w') as f:
+            f.write(self.text)

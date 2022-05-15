@@ -18,21 +18,24 @@ class StartWidget(QWidget):
         self.setup()
 
     def setup(self):
+
         asciiart_btn = QPushButton('Сделать asciiart', self)
 
         asciiart_btn.resize(100, 32)
         asciiart_btn.move(50, 50)
         asciiart_btn.clicked.connect(self.asciiart)
+
         asciiart_btn.hide()
 
         file_btn = QPushButton('Выберите файл', self)
+
 
         file_btn.resize(100, 32)
         file_btn.move(50, 100)
 
         file_btn.clicked.connect(lambda: self.openFileNameDialog(asciiart_btn))
 
-        text = QLabel('12345677', self)
+        text = QLabel('at the beginning', self)
         text.setFont(QFont('Courier', 4))
 
     def openFileNameDialog(self, btn):
@@ -52,7 +55,5 @@ class StartWidget(QWidget):
         except IOError:
             print(f'Не удалось найти изображение по заданному пути {self.file_name}')
             sys.exit(1)
-
         art = ArtProcessor.get_ascii_art(img)
-
         self.parent().setCentralWidget(ResultWidget(art))

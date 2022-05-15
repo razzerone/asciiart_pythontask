@@ -7,7 +7,6 @@ class TextWidget(QWidget):
         super().__init__()
         self.text = text
 
-
         self.scroll = QScrollArea(self)
         self.scroll.resize(1920, 1080)
 
@@ -17,6 +16,3 @@ class TextWidget(QWidget):
         self.scroll.setWidget(label)
 
         self.show()
-
-
-
