@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QScrollArea
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import QWidget, QLabel, QScrollArea, QMainWindow
 
 
 class TextWidget(QWidget):
@@ -7,12 +7,16 @@ class TextWidget(QWidget):
         super().__init__()
         self.text = text
 
+        self.scroll = None
+
+        self.setup()
+
+    def setup(self):
         self.scroll = QScrollArea(self)
         self.scroll.resize(1920, 1080)
 
         label = QLabel(self.text)
-        label.setFont(QFont('Courier', 2))
+        label.setFont(QFont('Courier', 8))
 
         self.scroll.setWidget(label)
 
-        self.show()

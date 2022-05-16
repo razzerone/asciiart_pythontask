@@ -3,8 +3,8 @@ import pathlib
 import sys
 
 from PIL import Image
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QPushButton, QCheckBox, QFileDialog, \
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import QWidget, QPushButton, QCheckBox, QFileDialog, \
     QLabel
 
 from ASCIIArtCore.art_processor import ArtProcessor
@@ -37,9 +37,6 @@ class StartWidget(QWidget):
             lambda: self.open_file_name_dialog(asciiart_btn)
         )
 
-        text = QLabel('at the beginning', self)
-        text.setFont(QFont('Courier', 4))
-
     def open_file_name_dialog(self, btn):
         file_name, _ = QFileDialog.getOpenFileName(
             self,
@@ -48,7 +45,7 @@ class StartWidget(QWidget):
             "Image Files (*.jpeg;*.jpg;*.png),*.jpeg;*.jpg;*.png"
         )
 
-        if pathlib.Path.exists(pathlib.Path(file_name)):
+        if file_name != '' and pathlib.Path.exists(pathlib.Path(file_name)):
             self.file_name = file_name
             btn.show()
 

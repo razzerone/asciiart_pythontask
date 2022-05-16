@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtWidgets import QMainWindow, QApplication
 
 from ASCIIArtGUI.start_widget import StartWidget
 
@@ -25,7 +25,7 @@ def main():
     win = MainWindow()
     win.show()
     win.setStyleSheet(
-            "QWidget {background-color: rgba(0,41,59,255);} "
+            "QWidget {background-color: rgba(126,41,59,255);} "
             "QScrollBar:horizontal "
             "{width: 1px; height: 1px; background-color: rgba(0,41,59,255);} "
             "QScrollBar:vertical "
@@ -33,7 +33,7 @@ def main():
             "QPushButton { background-color: #b5e6e1 }"
             "QPushButton:pressed { background-color: #51FFFF }"
     )
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':
