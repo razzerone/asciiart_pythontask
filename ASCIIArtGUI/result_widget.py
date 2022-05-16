@@ -1,7 +1,6 @@
-from PIL import Image
 from PyQt5.QtCore import QTimer
-from PyQt5.uic.properties import QtCore
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QSplashScreen
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QSplashScreen, \
+    QFileDialog
 from PyQt5 import QtGui
 
 from ASCIIArtCore.art_processor import Art
@@ -13,7 +12,7 @@ from ASCIIArtGUI.text_widget import TextWidget
 class ResultWidget(QWidget):
     def __init__(self, art: Art):
         super().__init__()
-        self.splash=None
+        self.splash = None
         self.art = art
         self.text = None
         self.image = None
@@ -61,8 +60,20 @@ class ResultWidget(QWidget):
         self.label = TextWidget(self.text)
 
     def save_image(self):
-        self.image.save("img.jpg")
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Выбор файла",
+            "",
+            "Image Files (*.png),*.png",
+        )
+        self.image.save(path)
 
     def save_text(self):
-        with open('text.txt', 'w') as f:
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Выбор файла",
+            "",
+            "Text Files (*.txt),*.txt",
+        )
+        with open(path, 'w') as f:
             f.write(self.text)

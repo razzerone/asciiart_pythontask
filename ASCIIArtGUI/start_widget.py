@@ -1,4 +1,5 @@
 import os
+import pathlib
 import sys
 
 from PIL import Image
@@ -29,31 +30,36 @@ class StartWidget(QWidget):
 
         file_btn = QPushButton('Выберите файл', self)
 
-
         file_btn.resize(100, 32)
         file_btn.move(50, 100)
 
-        file_btn.clicked.connect(lambda: self.openFileNameDialog(asciiart_btn))
+        file_btn.clicked.connect(
+            lambda: self.open_file_name_dialog(asciiart_btn)
+        )
 
         text = QLabel('at the beginning', self)
         text.setFont(QFont('Courier', 4))
 
-    def openFileNameDialog(self, btn):
+    def open_file_name_dialog(self, btn):
         file_name, _ = QFileDialog.getOpenFileName(
             self,
             "Выбор файла",
             "",
-            "Image Files (*.jpeg;*.jpg;*.png),*.jpeg;*.jpg;*.png",
+            "Image Files (*.jpeg;*.jpg;*.png),*.jpeg;*.jpg;*.png"
         )
-        self.file_name = file_name
 
-        btn.show()
+        if pathlib.Path.exists(pathlib.Path(file_name)):
+            self.file_name = file_name
+            btn.show()
 
     def asciiart(self) -> None:
         try:
             img = Image.open(self.file_name)
         except IOError:
-            print(f'Не удалось найти изображение по заданному пути {self.file_name}')
+            print(
+                f'Не удалось найти изображение '
+                f'по заданному пути {self.file_name}'
+            )
             sys.exit(1)
         art = ArtProcessor.get_ascii_art(img)
         self.parent().setCentralWidget(ResultWidget(art))
