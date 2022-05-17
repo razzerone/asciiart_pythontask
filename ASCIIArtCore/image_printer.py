@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from threading import Thread
 
 import cv2
 import numpy
@@ -10,8 +11,12 @@ from ASCIIArtCore.art_processor import Art
 
 
 class ImagePrinter:
+    _is_ready: bool
 
     def __init__(self, width, height):
+        self._is_ready = False
+        self._thread = None
+
         self.img = numpy.full(
             (
                 height * settings.image_font_height,
@@ -26,6 +31,9 @@ class ImagePrinter:
         self.y = 0
 
     def __init__(self, art: Art):
+        self._is_ready = False
+        self._thread = None
+
         self.img = numpy.full(
             (
                 art.height * settings.image_font_height,
@@ -36,11 +44,19 @@ class ImagePrinter:
             dtype=numpy.uint8
         )
 
-        self.x = 0
-        self.y = 0
-
         for char, color in art.art:
             self.add_char(char, color)
+
+    def add_all_chars(self, art):
+        for char, color in art.art:
+            self.add_char(char, color)
+
+        self._is_ready = True
+
+    def from_art_paralel(self, art: Art):
+        self._thread = Thread(target=self.add_all_chars, args=(art, ))
+        self._thread.start()
+
 
     def add_char(self, char: str,
                  color: tuple[int, int, int] = (255, 255, 255)) -> None:

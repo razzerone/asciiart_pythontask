@@ -13,8 +13,8 @@ class ResultWidget(QWidget):
     def __init__(self, art: Art):
         super().__init__()
         self.art = art
-        self.text = None
-        self.image = None
+        self.text_printer = None
+        self.image_printer = None
 
         self.check_box = None
 
@@ -47,14 +47,14 @@ class ResultWidget(QWidget):
         self.splash = QSplashScreen(QtGui.QPixmap('fresco.png'))
 
     def _process_image(self):
-        if self.image is None:
-            self.image = ImagePrinter(self.art).get_image()
+        if self.image_printer is None:
+            self.image_printer = ImagePrinter(self.art.width, self.art.height)
             self.splash.show()
-            QTimer.singleShot(2000, self.splash.close)
+            QTimer.
 
     def _process_text(self):
-        if self.text is None:
-            self.text = TextPrinter(self.art).get_text()
+        if self.text_printer is None:
+            self.text_printer = TextPrinter(self.art).get_text()
             self.splash.show()
             QTimer.singleShot(2000, self.splash.close)
 
@@ -62,11 +62,11 @@ class ResultWidget(QWidget):
         self._process_image()
 
         if self.check_box.isChecked():
-            self.image.show()
+            self.image_printer.show()
 
     def show_text(self):
         self._process_text()
-        self.text_widget = TextWidget(self.text)
+        self.text_widget = TextWidget(self.text_printer)
         self.text_widget.showMaximized()
 
     def save_image(self):
@@ -76,7 +76,7 @@ class ResultWidget(QWidget):
             "",
             "Image Files (*.png),*.png",
         )
-        self.image.save(path)
+        self.image_printer.save(path)
 
     def save_text(self):
         path, _ = QFileDialog.getSaveFileName(
@@ -86,4 +86,4 @@ class ResultWidget(QWidget):
             "Text Files (*.txt),*.txt",
         )
         with open(path, 'w') as f:
-            f.write(self.text)
+            f.write(self.text_printer)
