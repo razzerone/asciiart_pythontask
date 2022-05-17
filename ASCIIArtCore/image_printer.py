@@ -44,6 +44,9 @@ class ImagePrinter:
             dtype=numpy.uint8
         )
 
+        self.x = 0
+        self.y = 0
+
         for char, color in art.art:
             self.add_char(char, color)
 

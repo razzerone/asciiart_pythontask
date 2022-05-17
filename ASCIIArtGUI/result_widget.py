@@ -1,3 +1,5 @@
+from threading import Thread
+
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton, QSplashScreen, \
     QFileDialog, QHBoxLayout, QCheckBox
@@ -48,21 +50,21 @@ class ResultWidget(QWidget):
 
     def _process_image(self):
         if self.image_printer is None:
-            self.image_printer = ImagePrinter(self.art.width, self.art.height)
+            self.image_printer = ImagePrinter(self.art)
             self.splash.show()
-            QTimer.
 
     def _process_text(self):
         if self.text_printer is None:
             self.text_printer = TextPrinter(self.art).get_text()
             self.splash.show()
-            QTimer.singleShot(2000, self.splash.close)
 
     def show_image(self):
-        self._process_image()
-
+        th = Thread(target=self._process_image)
+        th.start()
+        th.join()
+        self.splash.close()
         if self.check_box.isChecked():
-            self.image_printer.show()
+            self.image_printer.get_image().show()
 
     def show_text(self):
         self._process_text()
