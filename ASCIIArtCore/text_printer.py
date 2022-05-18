@@ -26,3 +26,6 @@ class TextPrinter:
         with path.open('w') as file:
             for c in self.art:
                 file.write(c)
+
+    def get_text(self):
+        return ''.join(self.art)
