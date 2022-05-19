@@ -30,5 +30,5 @@ class ArtProcessor:
         """
 
         return settings.ASCII_symbols[
-            (pixel[0] + pixel[1] + pixel[2]) / 3 // settings.contrast_step
+            int((pixel[0] + pixel[1] + pixel[2]) / 3) // settings.contrast_step
             ]
