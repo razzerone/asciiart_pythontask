@@ -1,6 +1,5 @@
 import io
 import secrets
-import tempfile
 
 import flask
 from PIL import Image
@@ -13,22 +12,30 @@ from ASCIIArtCore.text_printer import TextPrinter
 app = flask.Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_bytes()
 
-pull = dict()
 
-
-def get_asciiart(image: bytes):
-    img = Image.open(io.BytesIO(image))
-
+def get_asciiart_text(img_bytes: bytes):
+    img = Image.open(io.BytesIO(img_bytes))
     art = ArtProcessor.process_image_to_asciiart(img)
-
-    image_printer = ImagePrinter(img.width, img.height)
     text_printer = TextPrinter()
 
     for char, color in art:
-        image_printer.add_char(char, color)
         text_printer.add_char(char)
 
-    return text_printer.get_text(), image_printer.get_image()
+    return flask.render_template(
+        'text_output.html',
+        text=text_printer.get_text()
+    )
+
+
+def get_asciiart_image(img_bytes: bytes):
+    img = Image.open(io.BytesIO(img_bytes))
+    art = ArtProcessor.process_image_to_asciiart(img)
+    image_printer = ImagePrinter(img.width, img.height)
+
+    for char, color in art:
+        image_printer.add_char(char, color)
+
+    return serve_pil_image(image_printer.get_image())
 
 
 def serve_pil_image(pil_image: Image.Image):
@@ -38,18 +45,7 @@ def serve_pil_image(pil_image: Image.Image):
     return flask.send_file(img_io, mimetype='image/png')
 
 
-@app.route('/show/')
-def show(path):
-    pass
-
-
-@app.route('/', methods=('GET', ))
-def index():
-    return flask.render_template('index.html')
-
-
-@app.route('/upload', methods=('POST', 'GET'))
-def asciiart():
+def uploading(func, fmt):
     if flask.request.method == 'POST':
         if 'photo' not in flask.request.files:
             flask.flash('No file part')
@@ -61,13 +57,34 @@ def asciiart():
             flask.flash('No selected file')
             return flask.redirect(flask.request.url)
 
-        _, img = get_asciiart(image.stream.read())
-
-        return serve_pil_image(img)
+        return func(image.stream.read())
 
     elif flask.request.method == 'GET':
-        return flask.render_template('image.html', image_path=pull[flask.request.remote_addr])
-# C:\Users\RAZZER~1\AppData\Local\Temp\tmpt8wszidb
+        return flask.render_template(
+            'upload.html',
+            action=flask.url_for(f'asciiart_{fmt}'),
+            format=fmt
+        )
+
+
+@app.route('/', methods=('GET', ))
+def index():
+    return flask.render_template(
+        'index.html',
+        image_url=flask.url_for('asciiart_image'),
+        text_url=flask.url_for('asciiart_text')
+    )
+
+
+@app.route('/upload_image', methods=('POST', 'GET'))
+def asciiart_image():
+    return uploading(get_asciiart_image, 'image')
+
+
+@app.route('/upload_text', methods=('POST', 'GET'))
+def asciiart_text():
+    return uploading(get_asciiart_text, 'text')
+
 
 if __name__ == '__main__':
     app.run()
