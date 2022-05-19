@@ -31,6 +31,13 @@ def get_asciiart(image: bytes):
     return text_printer.get_text(), image_printer.get_image()
 
 
+def serve_pil_image(pil_image: Image.Image):
+    img_io = io.BytesIO()
+    pil_image.save(img_io, "png")
+    img_io.seek(0)
+    return flask.send_file(img_io, mimetype='image/png')
+
+
 @app.route('/show/')
 def show(path):
     pass
@@ -56,14 +63,7 @@ def asciiart():
 
         _, img = get_asciiart(image.stream.read())
 
-        with tempfile.NamedTemporaryFile() as tmp:
-            tmp.write(img.tobytes())
-            name = tmp.name
-
-        pull[flask.request.remote_addr] = name
-
-        return flask.render_template('image.html', image_path=pull[
-            flask.request.remote_addr])
+        return serve_pil_image(img)
 
     elif flask.request.method == 'GET':
         return flask.render_template('image.html', image_path=pull[flask.request.remote_addr])

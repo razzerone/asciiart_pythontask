@@ -5,6 +5,6 @@
     <title>Title</title>
 </head>
 <body>
-    <img src="{{ image_path }}" alt="image alt text" />
+    <img src="{{ url_for('static', filename=image_path) }}" alt="image alt text" />
 </body>
 </html>
