@@ -1,6 +1,7 @@
 import sqlalchemy.exc
 from sqlalchemy.orm import sessionmaker
 
+import web_settings
 from ASCIIArtDB.tables import Image
 from ASCIIArtDB.image_repository import ImageRepository
 
@@ -23,10 +24,10 @@ class ImageRepositoryImpl(ImageRepository):
     def get_image_by_id(self, id_: int) -> bytes | None:
         with self._session_factory() as session:
             try:
-                resp = session\
-                    .query(Image.image)\
-                    .filter(Image.id == id_)\
-                    .one()\
+                resp = session \
+                    .query(Image.image) \
+                    .filter(Image.id == id_) \
+                    .one() \
                     .image
                 return resp
             except sqlalchemy.exc.NoResultFound:
@@ -43,7 +44,9 @@ class ImageRepositoryImpl(ImageRepository):
         with self._session_factory() as session:
             session.query(Image) \
                 .filter(
-                ImageRepository.get_current_timestamp() - Image.timestamp >= 1000
+                ImageRepository
+                .get_current_timestamp() -
+                Image.timestamp >= web_settings.image_ttl
             ) \
                 .delete()
 
