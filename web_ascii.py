@@ -56,7 +56,12 @@ def get_result(func):
             'Извините, но ваше изображение потерялось (возможно его и не было)'
 
     img_bin = image_repo.get_image_by_id(id_)
-    image_repo.delete_image_by_id(id_)
+
+    if img_bin is None:
+        return \
+            'Извините, но ваше изображение потерялось (возможно его и не было)'
+
+    image_repo.delete_old_images()
 
     return func(img_bin)
 
@@ -89,7 +94,6 @@ def upload():
         return flask.redirect(flask.url_for('result'))
 
     return flask.redirect(flask.url_for('/'))
-
 
 
 @app.route('/result', methods=('GET', ))

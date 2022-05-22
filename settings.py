@@ -14,8 +14,8 @@ contrast_step = 3
 ASCII_symbols_width = 1
 
 ASCII_symbols = \
-    ' .,`\'"""_-+<>=*^:;!co()/\[]?iljnaef1JILY7' \
-    'VTCUZ4AO0PX23hbhbdk56GF89%DEKSNQR&WB$WHM#@@@@'
+    ' .,`\'"""""_-+<>=*^::::::;!co(()//\[]?illjnaaeff1JILY7' \
+    'VTCCUZ4AOO0PX23hbhbdk56GF89%DEKSNQR&WB$WHM#@@@@'
 
 image_font = cv2.FONT_HERSHEY_TRIPLEX
 image_font_size = 0.5

@@ -1,3 +1,4 @@
+import sqlalchemy.exc
 from sqlalchemy.orm import sessionmaker
 
 from ASCIIArtDB.tables import Image
@@ -10,32 +11,40 @@ class ImageRepositoryImpl(ImageRepository):
         self._session_factory = sessionmaker(bind=engine)
 
     def add_image(self, img_bin: bytes) -> int:
-        session = self._session_factory()
-        image = Image(
-            image=img_bin,
-            timestamp=ImageRepositoryImpl.get_current_timestamp()
-        )
-        session.add(image)
-        session.commit()
-        return image.id
+        with self._session_factory() as session:
+            image = Image(
+                image=img_bin,
+                timestamp=ImageRepositoryImpl.get_current_timestamp()
+            )
+            session.add(image)
+            session.commit()
+            return image.id
 
-    def get_image_by_id(self, id_: int) -> bytes:
-        session = self._session_factory()
-        resp = session.query(Image.image).filter(Image.id == id_).one().image
-        session.commit()
-        return resp
+    def get_image_by_id(self, id_: int) -> bytes | None:
+        with self._session_factory() as session:
+            try:
+                resp = session\
+                    .query(Image.image)\
+                    .filter(Image.id == id_)\
+                    .one()\
+                    .image
+                return resp
+            except sqlalchemy.exc.NoResultFound:
+                return None
+            finally:
+                session.commit()
 
     def delete_image_by_id(self, id_: int):
-        session = self._session_factory()
-        session.query(Image).filter(Image.id == id_).delete()
-        session.commit()
+        with self._session_factory() as session:
+            session.query(Image).filter(Image.id == id_).delete()
+            session.commit()
 
-    def _delete_old_images(self):
-        session = self._session_factory()
-        session.query(Image) \
-            .filter(
-            ImageRepository.get_current_timestamp() - Image.timestamp >= 3000
-        ) \
-            .delete()
+    def delete_old_images(self):
+        with self._session_factory() as session:
+            session.query(Image) \
+                .filter(
+                ImageRepository.get_current_timestamp() - Image.timestamp >= 1000
+            ) \
+                .delete()
 
-        session.commit()
+            session.commit()
