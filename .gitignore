@@ -5,3 +5,5 @@ setup.py
 /test.db
 /images.db
 /setup_db.py
+.idea
+__pycache__
