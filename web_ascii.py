@@ -7,10 +7,13 @@ from PIL import Image
 from ASCIIArtCore.art_processor import ArtProcessor
 from ASCIIArtCore.image_printer import ImagePrinter
 from ASCIIArtCore.text_printer import TextPrinter
-
+from ASCIIArtDB.image_repository_SQL import ImageRepositoryImpl
+from ASCIIArtDB.tables import engine
 
 app = flask.Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_bytes()
+
+image_repo = ImageRepositoryImpl(engine=engine)
 
 
 def get_asciiart_text(img_bytes: bytes):
@@ -45,7 +48,29 @@ def serve_pil_image(pil_image: Image.Image):
     return flask.send_file(img_io, mimetype='image/png')
 
 
-def uploading(func, fmt):
+def get_result(func):
+    try:
+        id_ = flask.session['image_id']
+    except:
+        return \
+            'Извините, но ваше изображение потерялось (возможно его и не было)'
+
+    img_bin = image_repo.get_image_by_id(id_)
+    image_repo.delete_image_by_id(id_)
+
+    return func(img_bin)
+
+
+@app.route('/', methods=('GET', ))
+def index():
+    return flask.render_template(
+        'index.html',
+        action=flask.url_for('upload')
+    )
+
+
+@app.route('/upload', methods=('GET', 'POST'))
+def upload():
     if flask.request.method == 'POST':
         if 'photo' not in flask.request.files:
             flask.flash('No file part')
@@ -57,33 +82,33 @@ def uploading(func, fmt):
             flask.flash('No selected file')
             return flask.redirect(flask.request.url)
 
-        return func(image.stream.read())
+        id_ = image_repo.add_image(image.stream.read())
 
-    elif flask.request.method == 'GET':
-        return flask.render_template(
-            'upload.html',
-            action=flask.url_for(f'asciiart_{fmt}'),
-            format=fmt
-        )
+        flask.session['image_id'] = id_
+
+        return flask.redirect(flask.url_for('result'))
+
+    return flask.redirect(flask.url_for('/'))
 
 
-@app.route('/', methods=('GET', ))
-def index():
+
+@app.route('/result', methods=('GET', ))
+def result():
     return flask.render_template(
-        'index.html',
-        image_url=flask.url_for('asciiart_image'),
-        text_url=flask.url_for('asciiart_text')
+        'result_main.html',
+        text_url=flask.url_for('result_text'),
+        image_url=flask.url_for('result_image')
     )
 
 
-@app.route('/upload_image', methods=('POST', 'GET'))
-def asciiart_image():
-    return uploading(get_asciiart_image, 'image')
+@app.route('/result/text', methods=('GET', ))
+def result_text():
+    return get_result(get_asciiart_text)
 
 
-@app.route('/upload_text', methods=('POST', 'GET'))
-def asciiart_text():
-    return uploading(get_asciiart_text, 'text')
+@app.route('/result/image', methods=('GET', ))
+def result_image():
+    return get_result(get_asciiart_image)
 
 
 if __name__ == '__main__':

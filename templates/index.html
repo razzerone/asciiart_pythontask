@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>ascii</title>
 </head>
 <body>
-    <p>
-        <a href="{{ text_url }}">ascii арт текст</a>
-    </p>
-    <p>
-        <a href="{{ image_url }}">ascii арт изображение</a>
-    </p>
+    <h1>ASCII - арт</h1>
+    <form action="{{ action }}" enctype="multipart/form-data" method="post">
+        <p>Загрузите фотографию, которую хотите превратить в ascii арт</p>
+        <p>
+
+            <input type="file" name="photo" multiple accept="image/*">
+            <input type="submit" value="Отправить">
+        </p>
+   </form>
 </body>
 </html>
