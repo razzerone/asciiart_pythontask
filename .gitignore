@@ -2,3 +2,6 @@
 /assets/
 /results/
 setup.py
+/test.db
+/images.db
+/setup_db.py
