@@ -19,6 +19,12 @@ image_repo = ImageRepositoryImpl(engine=engine)
 
 
 def get_asciiart_text(img_bytes: bytes):
+    """
+    Функция преобразовывает изображение в ascii арт в текстовом формате
+    и отправляет ответ
+    :param img_bytes: изображение в байтах
+    :return: None
+    """
     img = Image.open(io.BytesIO(img_bytes))
     art = ArtProcessor.process_image_to_asciiart(img)
     text_printer = TextPrinter()
@@ -33,6 +39,13 @@ def get_asciiart_text(img_bytes: bytes):
 
 
 def get_asciiart_image(img_bytes: bytes):
+    """
+    Функция преобразовывает изображение в ascii арт в формате изображения
+    и отправляет ответ
+
+    :param img_bytes: изображение в байтах
+    :return: None
+    """
     img = Image.open(io.BytesIO(img_bytes))
     art = ArtProcessor.process_image_to_asciiart(img)
     image_printer = ImagePrinter(img.width, img.height)
@@ -44,6 +57,13 @@ def get_asciiart_image(img_bytes: bytes):
 
 
 def serve_pil_image(pil_image: Image.Image):
+    """
+    Функция преобразовывает Pil изображение в формат, пригодный для отправки
+    и отправляет ответ
+
+    :param pil_image: Изображение в формате Pillow
+    :return: None
+    """
     img_io = io.BytesIO()
     pil_image.save(img_io, "png")
     img_io.seek(0)
@@ -51,6 +71,13 @@ def serve_pil_image(pil_image: Image.Image):
 
 
 def get_result(func):
+    """
+    Функция получает из базы данных сохраненное изображение
+    и использует функцию преобразования и отправки
+
+    :param func: функция преобразования и отправки
+    :return: None
+    """
     try:
         id_ = flask.session[IMAGE_ID]
     except KeyError:
@@ -66,8 +93,9 @@ def get_result(func):
     return func(img_bin)
 
 
-@app.route('/', methods=('GET', ))
+@app.route('/', methods=('GET',))
 def index():
+    """Обработчик Главной страницы"""
     return flask.render_template(
         'index.html',
         action=flask.url_for('upload')
@@ -76,6 +104,7 @@ def index():
 
 @app.route('/upload', methods=('GET', 'POST'))
 def upload():
+    """Обработчик загрузки изображения"""
     if flask.request.method == 'POST':
         if PHOTO not in flask.request.files:
             return flask.redirect(flask.url_for('index'))
@@ -96,6 +125,7 @@ def upload():
 
 @app.route('/result', methods=('GET',))
 def result():
+    """Обработчик страницы выбора результата"""
     return flask.render_template(
         'result_main.html',
         text_url=flask.url_for('result_text'),
@@ -105,11 +135,13 @@ def result():
 
 @app.route('/result/text', methods=('GET',))
 def result_text():
+    """Обработчик страницы текстового результата"""
     return get_result(get_asciiart_text)
 
 
 @app.route('/result/image', methods=('GET',))
 def result_image():
+    """Обработчик результата-изображения"""
     return get_result(get_asciiart_image)
 
 
