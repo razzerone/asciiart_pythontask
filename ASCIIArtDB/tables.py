@@ -8,6 +8,10 @@ Base = declarative_base()
 
 
 class Image(Base):
+    """
+    Описание таблицы изображений для реализации ImageRepository через
+    sqlalchemy
+    """
     __tablename__ = 'images'
     id = Column(Integer, primary_key=True)
     image = Column(LargeBinary)

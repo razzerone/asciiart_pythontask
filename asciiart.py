@@ -9,7 +9,7 @@ from ASCIIArtCore.image_printer import ImagePrinter
 from ASCIIArtCore.text_printer import TextPrinter
 
 
-def asciiart(path: Path) -> None:
+def asciiart(path: Path):
     try:
         img = Image.open(path)
     except IOError:
