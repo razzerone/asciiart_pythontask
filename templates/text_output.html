@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="resource://content-accessible/plaintext.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            font-family: "Courier New";
+            font-style: oblique;
+            font-size: xx-small;
+        }
+    </style>
+</head>
+<body>
+    {% for line in text.split('\n') %}
+        {{ line }} <br>
+    {% endfor %}
+</body>
+</html>

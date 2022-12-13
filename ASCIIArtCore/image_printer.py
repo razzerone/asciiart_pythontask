@@ -11,19 +11,21 @@ import settings
 class ImagePrinter:
 
     def __init__(self, width, height):
-        self.img = numpy.asarray(
-            Image.new(
-                'RGB',
-                (
-                    width * settings.image_font_width,
-                    height * settings.image_font_height
-                )
-            )
+        self.img = numpy.full(
+            (
+                height * settings.image_font_height,
+                width * settings.image_font_width,
+                3
+            ),
+            45,
+            dtype=numpy.uint8
         )
+
         self.x = 0
         self.y = 0
 
-    def add_char(self, char: str) -> None:
+    def add_char(self, char: str,
+                 color: tuple[int, int, int] = (255, 255, 255)) -> None:
         if char == '\n':
             self.y += 1
             self.x = 0
@@ -36,7 +38,7 @@ class ImagePrinter:
                 ),
                 settings.image_font,
                 settings.image_font_size,
-                (120, 120, 120),
+                color,
                 thickness=settings.image_font_thickness,
                 lineType=settings.image_font_line_type
             )
